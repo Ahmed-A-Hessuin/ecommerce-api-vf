@@ -8,7 +8,7 @@ const Category = require('../models/categoryModel');
 // @route   POST /api/v1/categories
 // @access  Private
 exports.createCategory = asyncHandler(async (req, res) => {
-  const name = req.body.name
+  const { name } = req.body
   const category = await Category.create({ name, slug: slugify(name) })
   res.status(201).json({ data: category })
 })
@@ -17,9 +17,9 @@ exports.createCategory = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/categories
 // @access  Public
 exports.getCategories = asyncHandler(async (req, res) => {
-  page = req.query.page * 1 || 1;
-  limit = req.query.limit * 1 || 5;
-  skip = (page - 1) * limit;
+  const page = req.query.page * 1 || 1;
+  const limit = req.query.limit * 1 || 5;
+  const skip = (page - 1) * limit;
   const categories = await Category.find({}).skip(skip).limit(limit);
   res.status(200).json({ results: categories.length, page, data: categories })
 });
@@ -39,9 +39,9 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 // @desc    Update Specific category by id 
 // @route   PUT /api/v1/categories/:id
 // @access  Private
-exports.updateCategory = asyncHandler(async (req, res , next) => {
+exports.updateCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params
-  const name = req.body.name
+  const { name } = req.body
   const category = await Category.findOneAndUpdate(
     { _id: id },
     { name, slug: slugify(name) },
@@ -55,7 +55,7 @@ exports.updateCategory = asyncHandler(async (req, res , next) => {
 // @desc    Delete Specific category by id 
 // @route   Delete /api/v1/categories/:id
 // @access  Private
-exports.deleteCategory = asyncHandler(async (req, res) => {
+exports.deleteCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params
   const category = await Category.findByIdAndDelete(id);
   if (!category) {
